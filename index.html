@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansel — disk usage visualizer</title>
+<meta name="description" content="Ansel is a disk usage visualizer for macOS, Linux, and Windows. Treemaps, sunburst diagrams, and a cleanup workflow — built to help you free up space.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📐</text></svg>">
+<style>
+  :root {
+    --bg:       #0d0d0d;
+    --surface:  #141414;
+    --border:   #222;
+    --text:     #b0b0b0;
+    --text-dim: #606060;
+    --heading:  #e8e8e8;
+    --accent:   #e8903a;
+    --radius:   8px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    font-size: 17px;
+    background: var(--bg);
+  }
+
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2 {
+    font-family: Georgia, "Times New Roman", "New York", serif;
+    font-weight: 400;
+    color: var(--heading);
+    letter-spacing: -0.015em;
+  }
+
+  a { color: var(--accent); text-decoration: none; transition: color 0.15s; }
+  a:hover { color: #f0a450; }
+
+  code {
+    font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+    font-size: 0.85em;
+    background: var(--surface);
+    padding: 0.1em 0.35em;
+    border-radius: 3px;
+  }
+
+  .wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* ── hero ────────────────────────────── */
+
+  .hero {
+    padding: 6rem 0 3rem;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: clamp(4rem, 9vw, 7rem);
+    letter-spacing: -0.035em;
+    line-height: 0.92;
+    margin-bottom: 1rem;
+  }
+
+  .hero .deck {
+    font-size: 1.05rem;
+    color: var(--text);
+    max-width: 500px;
+    margin: 0 auto 2.25rem;
+  }
+
+  .hero .cta-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45em;
+    padding: 0.6em 1.4em;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.97); }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #0d0d0d;
+    border-color: var(--accent);
+  }
+  .btn-primary:hover { background: #f09c4c; border-color: #f09c4c; }
+
+  .btn-ghost {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--heading);
+  }
+  .btn-ghost:hover { background: var(--surface); border-color: #444; color: var(--heading); }
+
+  .hero .meta {
+    display: flex;
+    justify-content: center;
+    gap: 1.75rem;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .hero .meta a {
+    color: var(--text-dim);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+  }
+  .hero .meta a:hover { color: var(--heading); }
+
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .dot.star    { background: var(--accent); }
+  .dot.release { background: #6a9f50; }
+  .dot.license { background: #5a8eb5; }
+
+  /* ── showcase (hero screenshot) ──────── */
+
+  .showcase {
+    padding: 1rem 0 5rem;
+    text-align: center;
+  }
+
+  .showcase img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    display: block;
+    margin: 0 auto;
+  }
+
+  .showcase .caption {
+    margin-top: 0.85rem;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── highlights ──────────────────────── */
+
+  .highlights {
+    padding: 5rem 0;
+  }
+
+  .highlights h2 {
+    font-size: 1.8rem;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .highlight-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+  }
+
+  .highlight h3 {
+    font-family: system-ui, -apple-system, sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--heading);
+    margin-bottom: 0.4rem;
+  }
+
+  .highlight p {
+    font-size: 0.87rem;
+    color: var(--text);
+    line-height: 1.55;
+  }
+
+  /* ── demos slider ────────────────────── */
+
+  .demos {
+    padding: 4rem 0 2rem;
+    text-align: center;
+  }
+
+  .demos h2 {
+    font-size: 1.8rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .slider {
+    position: relative;
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  .slider .slides {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: #000;
+  }
+
+  .slider .slide {
+    display: none;
+  }
+  .slider .slide.active {
+    display: block;
+  }
+
+  .slider .slide video {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .slider .slide .caption {
+    padding: 0.65rem 1rem;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    letter-spacing: 0.03em;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── arrows ──────────────────────────── */
+
+  .slider-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    z-index: 2;
+    padding: 0;
+  }
+  .slider-arrow:hover {
+    background: #1e1e1e;
+    border-color: #555;
+    color: var(--heading);
+  }
+
+  .slider-arrow.prev { left: -18px; }
+  .slider-arrow.next { right: -18px; }
+
+  .slider-arrow svg {
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+  }
+
+  /* ── dots ────────────────────────────── */
+
+  .slider-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .slider-dots button {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .slider-dots button:hover {
+    border-color: #555;
+  }
+  .slider-dots button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* ── download ────────────────────────── */
+
+  .download {
+    padding: 5rem 0 6rem;
+  }
+
+  .download h2 {
+    font-size: 1.8rem;
+    text-align: center;
+    margin-bottom: 0.4rem;
+  }
+
+  .download .sub {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .platform-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .platform {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .platform .os {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: 0.2rem;
+  }
+
+  .platform .ext {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-bottom: 1.25rem;
+  }
+
+  .platform .btn { width: 100%; }
+
+  /* ── footer ──────────────────────────── */
+
+  footer {
+    padding: 3rem 0 5rem;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+  }
+
+  footer .links {
+    margin-bottom: 0.75rem;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  footer .links a {
+    color: var(--text);
+  }
+  footer .links a:hover { color: var(--accent); }
+
+  footer .byline {
+    color: var(--text-dim);
+    padding-bottom: 2rem;
+  }
+
+  /* ── responsive ──────────────────────── */
+
+  @media (max-width: 720px) {
+    .hero h1 { font-size: 3.2rem; }
+    .highlight-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .platform-grid { grid-template-columns: 1fr; }
+    .slider-arrow.prev { left: 6px; }
+    .slider-arrow.next { right: 6px; }
+    .slider-arrow { width: 32px; height: 32px; }
+    .wrap { padding: 0 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero wrap">
+  <h1>Ansel</h1>
+  <p class="deck">
+    A disk usage visualizer for macOS, Linux, and Windows.
+    Scan your drive, explore it as treemaps and sunbursts,
+    mark the cruft, and free up space.
+  </p>
+
+  <div class="cta-row">
+    <a href="https://github.com/fosterdill/ansel/releases/latest" class="btn btn-primary">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 1a.75.75 0 01.75.75v7.69l2.22-2.22a.75.75 0 111.06 1.06l-3.5 3.5a.75.75 0 01-1.06 0l-3.5-3.5a.75.75 0 011.06-1.06L7.25 9.44V1.75A.75.75 0 018 1z" fill="currentColor"/><path d="M1.75 10.5a.75.75 0 01.75.75v2c0 .138.112.25.25.25h10.5a.25.25 0 00.25-.25v-2a.75.75 0 011.5 0v2A1.75 1.75 0 0113.25 15H2.75A1.75 1.75 0 011 13.25v-2a.75.75 0 01.75-.75z" fill="currentColor"/></svg>
+      Download
+    </a>
+    <a href="https://github.com/fosterdill/ansel" class="btn btn-ghost">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+  </div>
+
+  <div class="meta">
+    <a href="https://github.com/fosterdill/ansel/stargazers"><span class="dot star"></span> <span id="starCount">…</span></a>
+    <a href="https://github.com/fosterdill/ansel/releases"><span class="dot release"></span> <span id="versionTag">v0.4.7</span></a>
+    <a href="https://github.com/fosterdill/ansel/blob/main/LICENSE"><span class="dot license"></span> MIT</a>
+  </div>
+</header>
+
+<section class="demos wrap">
+  <h2>See it in action</h2>
+  <div class="slider" id="slider">
+    <button class="slider-arrow prev" id="prevSlide" aria-label="Previous slide">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M10.5 2.5L5.5 8l5 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="slides">
+      <div class="slide active">
+        <video src="videos/treemap - color modes.mp4" autoplay muted loop playsinline preload="metadata"></video>
+        <div class="caption">Color modes &mdash; file type, modification age heatmap, last-access, or folder</div>
+      </div>
+      <div class="slide">
+        <video src="videos/treemap - folder highlighting.mp4" autoplay muted loop playsinline preload="metadata"></video>
+        <div class="caption">Folder highlighting &mdash; hold Shift to see group boundaries under the cursor</div>
+      </div>
+      <div class="slide">
+        <video src="videos/treemap - marking for cleanup.mp4" autoplay muted loop playsinline preload="metadata"></video>
+        <div class="caption">Cleanup queue &mdash; mark files as you browse, then trash or delete in bulk</div>
+      </div>
+      <div class="slide">
+        <video src="videos/sunburst and treemap - persistent state.mp4" autoplay muted loop playsinline preload="metadata"></video>
+        <div class="caption">Persistent state &mdash; switch between sunburst and treemap, your position is preserved</div>
+      </div>
+    </div>
+    <button class="slider-arrow next" id="nextSlide" aria-label="Next slide">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M5.5 2.5L10.5 8l-5 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="slider-dots" id="sliderDots"></div>
+  </div>
+</section>
+
+<section class="highlights wrap">
+  <h2>What it does</h2>
+  <div class="highlight-grid">
+    <div class="highlight">
+      <h3>See everything</h3>
+      <p>Treemap, sunburst, or flat table. Canvas-rendered at native DPR so every pixel counts.</p>
+    </div>
+    <div class="highlight">
+      <h3>Color by type, age, or folder</h3>
+      <p>14 file categories, a cool&rarr;warm heatmap by modification age, or folder coloring for treemap view.</p>
+    </div>
+    <div class="highlight">
+      <h3>Queue and clean up</h3>
+      <p>Mark files as you browse, review the queue, then trash or delete with a two-step confirmation.</p>
+    </div>
+    <div class="highlight">
+      <h3>Multi-select</h3>
+      <p><code>&#8984;-click</code> files across all views. Drag-to-select on the treemap. Inspect and act on batches.</p>
+    </div>
+    <div class="highlight">
+      <h3>Search</h3>
+      <p>Case-insensitive search over the entire scan tree, sorted by size with keyboard navigation.</p>
+    </div>
+    <div class="highlight">
+      <h3>Cross-platform</h3>
+      <p>macOS, Linux, and Windows. Platform-native file manager, shortcuts, and trash integration.</p>
+    </div>
+  </div>
+</section>
+
+<section class="download wrap">
+  <h2>Get it</h2>
+  <p class="sub">Grab the latest release for your platform, or <a href="https://github.com/fosterdill/ansel#development">build from source</a>.</p>
+  <div class="platform-grid">
+    <div class="platform">
+      <div class="os">macOS</div>
+      <div class="ext">Apple Silicon &amp; Intel &middot; .dmg</div>
+      <a href="https://github.com/fosterdill/ansel/releases/latest" class="btn btn-ghost" id="dl-macos">Download .dmg</a>
+    </div>
+    <div class="platform">
+      <div class="os">Linux</div>
+      <div class="ext">.AppImage &middot; .deb</div>
+      <a href="https://github.com/fosterdill/ansel/releases/latest" class="btn btn-ghost" id="dl-linux">Download</a>
+    </div>
+    <div class="platform">
+      <div class="os">Windows</div>
+      <div class="ext">.msi installer</div>
+      <a href="https://github.com/fosterdill/ansel/releases/latest" class="btn btn-ghost" id="dl-windows">Download .msi</a>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <div class="links">
+    <a href="https://github.com/fosterdill/ansel">GitHub</a>
+    <a href="https://github.com/fosterdill/ansel/blob/main/CONTRIBUTING.md">Contributing</a>
+    <a href="https://github.com/fosterdill/ansel/blob/main/SECURITY.md">Security</a>
+    <a href="https://github.com/fosterdill/ansel/issues">Report a bug</a>
+  </div>
+  <p class="byline">Ansel is open source under the MIT license. Built with Rust, Tauri &amp; React.</p>
+</footer>
+
+<script>
+(function () {
+  var slider = document.getElementById('slider');
+  var slides = slider.querySelectorAll('.slide');
+  var dotsContainer = document.getElementById('sliderDots');
+  var prevBtn = document.getElementById('prevSlide');
+  var nextBtn = document.getElementById('nextSlide');
+  var current = 0;
+
+  for (var i = 0; i < slides.length; i++) {
+    var btn = document.createElement('button');
+    if (i === 0) btn.classList.add('active');
+    btn.setAttribute('aria-label', 'Slide ' + (i + 1));
+    btn.addEventListener('click', (function (idx) { return function () { goTo(idx); }; })(i));
+    dotsContainer.appendChild(btn);
+  }
+
+  var dots = dotsContainer.querySelectorAll('button');
+
+  function goTo(index) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    var prevVideo = slides[current].querySelector('video');
+    if (prevVideo) prevVideo.pause();
+
+    current = index;
+
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+    var nextVideo = slides[current].querySelector('video');
+    if (nextVideo) nextVideo.play();
+  }
+
+  prevBtn.addEventListener('click', function () {
+    goTo(current === 0 ? slides.length - 1 : current - 1);
+  });
+
+  nextBtn.addEventListener('click', function () {
+    goTo(current === slides.length - 1 ? 0 : current + 1);
+  });
+})();
+
+(function () {
+  var starEl = document.getElementById('starCount');
+  var versionEl = document.getElementById('versionTag');
+
+  fetch('https://api.github.com/repos/fosterdill/ansel')
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (data.stargazers_count != null) {
+        if (data.stargazers_count >= 10) {
+          starEl.textContent = formatStars(data.stargazers_count);
+        } else {
+          starEl.parentElement.style.display = 'none';
+        }
+      }
+    })
+    .catch(function () { starEl.textContent = 'Stars'; });
+
+  fetch('https://api.github.com/repos/fosterdill/ansel/releases/latest')
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (data.tag_name) {
+        versionEl.textContent = data.tag_name;
+      }
+
+      var assets = data.assets || [];
+
+      function findByExt(ext) {
+        for (var i = 0; i < assets.length; i++) {
+          if (assets[i].name.toLowerCase().endsWith(ext.toLowerCase())) return assets[i];
+        }
+        return null;
+      }
+
+      var dmgAarch64 = findByExt('aarch64.dmg') || findByExt('arm64.dmg') || findByExt('.dmg');
+      var dmgIntel = findByExt('x64.dmg') || findByExt('x86_64.dmg');
+      var appImage = findByExt('.AppImage');
+      var msi = findByExt('.msi') || findByExt('.exe');
+
+      if (dmgAarch64) document.getElementById('dl-macos').href = dmgAarch64.browser_download_url;
+      if (appImage) document.getElementById('dl-linux').href = appImage.browser_download_url;
+      if (msi) document.getElementById('dl-windows').href = msi.browser_download_url;
+    })
+    .catch(function () {});
+
+  function formatStars(n) {
+    if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k stars';
+    return n + ' ' + (n === 1 ? 'star' : 'stars');
+  }
+})();
+</script>
+
+</body>
+</html>
