@@ -217,7 +217,7 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  /* ── demos slider ────────────────────── */
+  /* ── demo video ──────────────────────── */
 
   .demos {
     padding: 4rem 0 2rem;
@@ -229,102 +229,9 @@
     margin-bottom: 2.5rem;
   }
 
-  .slider {
-    position: relative;
+  .demo-video {
     max-width: 780px;
     margin: 0 auto;
-  }
-
-  .slider .slides {
-    position: relative;
-    overflow: hidden;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    background: #000;
-  }
-
-  .slider .slide {
-    display: none;
-  }
-  .slider .slide.active {
-    display: block;
-  }
-
-  .slider .slide video {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-
-  .slider .slide .caption {
-    padding: 0.65rem 1rem;
-    font-size: 0.78rem;
-    color: var(--text-dim);
-    letter-spacing: 0.03em;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-  }
-
-  /* ── arrows ──────────────────────────── */
-
-  .slider-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s, color 0.15s;
-    z-index: 2;
-    padding: 0;
-  }
-  .slider-arrow:hover {
-    background: #1e1e1e;
-    border-color: #555;
-    color: var(--heading);
-  }
-
-  .slider-arrow.prev { left: -18px; }
-  .slider-arrow.next { right: -18px; }
-
-  .slider-arrow svg {
-    width: 14px;
-    height: 14px;
-    pointer-events: none;
-  }
-
-  /* ── dots ────────────────────────────── */
-
-  .slider-dots {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 1rem;
-  }
-
-  .slider-dots button {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: transparent;
-    cursor: pointer;
-    padding: 0;
-    transition: background 0.15s, border-color 0.15s;
-  }
-  .slider-dots button:hover {
-    border-color: #555;
-  }
-  .slider-dots button.active {
-    background: var(--accent);
-    border-color: var(--accent);
   }
 
   /* ── faq ─────────────────────────────── */
@@ -488,9 +395,6 @@
     .highlight-grid { grid-template-columns: 1fr; gap: 2rem; }
     .security-grid { grid-template-columns: 1fr; }
     .platform-grid { grid-template-columns: 1fr; }
-    .slider-arrow.prev { left: 6px; }
-    .slider-arrow.next { right: 6px; }
-    .slider-arrow { width: 32px; height: 32px; }
     .wrap { padding: 0 1.25rem; }
   }
 </style>
@@ -529,32 +433,8 @@
 
 <section class="demos wrap">
   <h2>See it in action</h2>
-  <div class="slider" id="slider">
-    <button class="slider-arrow prev" id="prevSlide" aria-label="Previous slide">
-      <svg viewBox="0 0 16 16" fill="none"><path d="M10.5 2.5L5.5 8l5 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-    <div class="slides">
-      <div class="slide active">
-        <video src="videos/treemap-color-modes.mp4" autoplay muted loop playsinline preload="metadata"></video>
-        <div class="caption">Color modes &mdash; file type, modification age heatmap, last-access, or folder</div>
-      </div>
-      <div class="slide">
-        <video src="videos/treemap-folder-highlighting.mp4" autoplay muted loop playsinline preload="metadata"></video>
-        <div class="caption">Folder highlighting &mdash; hold Shift to see group boundaries under the cursor</div>
-      </div>
-      <div class="slide">
-        <video src="videos/treemap-marking-for-cleanup.mp4" autoplay muted loop playsinline preload="metadata"></video>
-        <div class="caption">Cleanup queue &mdash; mark files as you browse, then trash or delete in bulk</div>
-      </div>
-      <div class="slide">
-        <video src="videos/sunburst-and-treemap-persistent-state.mp4" autoplay muted loop playsinline preload="metadata"></video>
-        <div class="caption">Persistent state &mdash; switch between sunburst and treemap, your position is preserved</div>
-      </div>
-    </div>
-    <button class="slider-arrow next" id="nextSlide" aria-label="Next slide">
-      <svg viewBox="0 0 16 16" fill="none"><path d="M5.5 2.5L10.5 8l-5 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-    <div class="slider-dots" id="sliderDots"></div>
+  <div class="demo-video">
+    <video src="videos/full-demo.mp4" autoplay muted loop playsinline preload="metadata" style="max-width:100%;height:auto;display:block;border-radius:var(--radius);border:1px solid var(--border);"></video>
   </div>
 </section>
 
@@ -714,47 +594,6 @@
 </footer>
 
 <script>
-(function () {
-  var slider = document.getElementById('slider');
-  var slides = slider.querySelectorAll('.slide');
-  var dotsContainer = document.getElementById('sliderDots');
-  var prevBtn = document.getElementById('prevSlide');
-  var nextBtn = document.getElementById('nextSlide');
-  var current = 0;
-
-  for (var i = 0; i < slides.length; i++) {
-    var btn = document.createElement('button');
-    if (i === 0) btn.classList.add('active');
-    btn.setAttribute('aria-label', 'Slide ' + (i + 1));
-    btn.addEventListener('click', (function (idx) { return function () { goTo(idx); }; })(i));
-    dotsContainer.appendChild(btn);
-  }
-
-  var dots = dotsContainer.querySelectorAll('button');
-
-  function goTo(index) {
-    slides[current].classList.remove('active');
-    dots[current].classList.remove('active');
-    var prevVideo = slides[current].querySelector('video');
-    if (prevVideo) prevVideo.pause();
-
-    current = index;
-
-    slides[current].classList.add('active');
-    dots[current].classList.add('active');
-    var nextVideo = slides[current].querySelector('video');
-    if (nextVideo) nextVideo.play();
-  }
-
-  prevBtn.addEventListener('click', function () {
-    goTo(current === 0 ? slides.length - 1 : current - 1);
-  });
-
-  nextBtn.addEventListener('click', function () {
-    goTo(current === slides.length - 1 ? 0 : current + 1);
-  });
-})();
-
 (function () {
   var starEl = document.getElementById('starCount');
   var versionEl = document.getElementById('versionTag');
