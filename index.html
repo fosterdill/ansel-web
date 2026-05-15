@@ -198,6 +198,10 @@
     line-height: 1.55;
   }
 
+  .security-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   /* ── demos slider ────────────────────── */
 
   .demos {
@@ -308,6 +312,68 @@
     border-color: var(--accent);
   }
 
+  /* ── faq ─────────────────────────────── */
+
+  .faq {
+    padding: 4rem 0;
+  }
+
+  .faq h2 {
+    font-size: 1.8rem;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .faq-list {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .faq-list details {
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 0;
+  }
+  .faq-list details:first-of-type {
+    border-top: 1px solid var(--border);
+  }
+
+  .faq-list summary {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--heading);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .faq-list summary::-webkit-details-marker { display: none; }
+  .faq-list summary:hover { color: var(--accent); }
+
+  .faq-list summary::after {
+    content: "+";
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--text-dim);
+    transition: transform 0.2s;
+    margin-left: 1rem;
+    flex-shrink: 0;
+  }
+  .faq-list details[open] summary::after {
+    content: "\2212";
+  }
+
+  .faq-list .answer {
+    padding-top: 0.6rem;
+    font-size: 0.88rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .faq-list .answer code {
+    font-size: 0.85em;
+  }
+
   /* ── download ────────────────────────── */
 
   .download {
@@ -324,7 +390,7 @@
     text-align: center;
     color: var(--text-dim);
     font-size: 0.9rem;
-    margin-bottom: 2.5rem;
+    margin-bottom: 0.35rem;
   }
 
   .platform-grid {
@@ -380,14 +446,32 @@
 
   footer .byline {
     color: var(--text-dim);
-    padding-bottom: 2rem;
   }
+
+  /* ── github ribbon ───────────────────── */
+
+  .github-ribbon {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 90px;
+    height: 90px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 12px 12px 0 0;
+    color: var(--heading);
+    transition: color 0.15s;
+    z-index: 10;
+  }
+  .github-ribbon:hover { color: var(--accent); }
 
   /* ── responsive ──────────────────────── */
 
   @media (max-width: 720px) {
     .hero h1 { font-size: 3.2rem; }
     .highlight-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .security-grid { grid-template-columns: 1fr; }
     .platform-grid { grid-template-columns: 1fr; }
     .slider-arrow.prev { left: 6px; }
     .slider-arrow.next { right: 6px; }
@@ -397,6 +481,10 @@
 </style>
 </head>
 <body>
+
+<a href="https://github.com/fosterdill/ansel" class="github-ribbon" aria-label="View on GitHub">
+  <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+</a>
 
 <header class="hero wrap">
   <h1>Ansel</h1>
@@ -432,19 +520,19 @@
     </button>
     <div class="slides">
       <div class="slide active">
-        <video src="videos/treemap - color modes.mp4" autoplay muted loop playsinline preload="metadata"></video>
+        <video src="videos/treemap-color-modes.mp4" autoplay muted loop playsinline preload="metadata"></video>
         <div class="caption">Color modes &mdash; file type, modification age heatmap, last-access, or folder</div>
       </div>
       <div class="slide">
-        <video src="videos/treemap - folder highlighting.mp4" autoplay muted loop playsinline preload="metadata"></video>
+        <video src="videos/treemap-folder-highlighting.mp4" autoplay muted loop playsinline preload="metadata"></video>
         <div class="caption">Folder highlighting &mdash; hold Shift to see group boundaries under the cursor</div>
       </div>
       <div class="slide">
-        <video src="videos/treemap - marking for cleanup.mp4" autoplay muted loop playsinline preload="metadata"></video>
+        <video src="videos/treemap-marking-for-cleanup.mp4" autoplay muted loop playsinline preload="metadata"></video>
         <div class="caption">Cleanup queue &mdash; mark files as you browse, then trash or delete in bulk</div>
       </div>
       <div class="slide">
-        <video src="videos/sunburst and treemap - persistent state.mp4" autoplay muted loop playsinline preload="metadata"></video>
+        <video src="videos/sunburst-and-treemap-persistent-state.mp4" autoplay muted loop playsinline preload="metadata"></video>
         <div class="caption">Persistent state &mdash; switch between sunburst and treemap, your position is preserved</div>
       </div>
     </div>
@@ -485,14 +573,99 @@
   </div>
 </section>
 
+<section class="highlights wrap">
+  <h2>Security &amp; privacy</h2>
+  <div class="highlight-grid security-grid">
+    <div class="highlight">
+      <h3>No telemetry</h3>
+      <p>Ansel never makes network requests. It operates entirely on your local filesystem with the permissions you already have.</p>
+    </div>
+    <div class="highlight">
+      <h3>Reproducible builds</h3>
+      <p>Every release comes with <a href="https://github.com/fosterdill/ansel/attestations">build provenance attestations</a> (SLSA) so you can verify the binary matches the source.</p>
+    </div>
+    <div class="highlight">
+      <h3>Code scanning</h3>
+      <p><a href="https://github.com/fosterdill/ansel/actions/workflows/codeql.yml">CodeQL SAST</a> runs on every push and PR, covering both the Rust backend and JavaScript frontend.</p>
+    </div>
+    <div class="highlight">
+      <h3>Supply chain</h3>
+      <p>All CI dependencies are pinned by commit hash. <a href="https://github.com/fosterdill/ansel/actions/workflows/scorecard.yml">OpenSSF Scorecard</a> runs weekly. Dependabot keeps things up to date.</p>
+    </div>
+  </div>
+</section>
+
+<section class="faq wrap" id="faq">
+  <h2>FAQ</h2>
+  <div class="faq-list">
+
+    <details>
+      <summary>Why doesn&rsquo;t the disk usage match Finder?</summary>
+      <div class="answer">
+        <p>Ansel measures <em>on-disk allocation</em> &mdash; how many blocks each file actually occupies (<code>st_blocks &times; 512</code> on Unix). Finder reports logical file size. On top of that:</p>
+        <p>&bull; Ansel&rsquo;s &ldquo;scanned&rdquo; total counts partial blocks per file, so it will be <em>higher</em> than Finder&rsquo;s &ldquo;Used.&rdquo;</p>
+        <p>&bull; Ansel&rsquo;s derived &ldquo;free&rdquo; space will be <em>lower</em> than Finder&rsquo;s &ldquo;Available&rdquo; because Finder includes purgeable space (Time Machine local snapshots, caches) that the filesystem doesn&rsquo;t count as free.</p>
+        <p>&bull; Finder uses base-10 (decimal GB) while Ansel matches the platform convention &mdash; base-2 on Linux/Windows, base-10 on macOS.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>macOS won&rsquo;t let me open the app. Help?</summary>
+      <div class="answer">
+        <p>Right-click &rarr; Open no longer works on recent macOS versions for unsigned apps. Instead:</p>
+        <p>1. Try to open the app (Gatekeeper will block it).</p>
+        <p>2. Open <strong>System Settings &rarr; Privacy &amp; Security</strong>.</p>
+        <p>3. Scroll to the bottom &mdash; you&rsquo;ll see a message that Ansel was blocked. Click <strong>Open Anyway</strong>.</p>
+        <p>4. Confirm the second dialog. Subsequent launches work normally.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Why are some folders showing 0 bytes?</summary>
+      <div class="answer">
+        <p>Parts of <code>~/Library</code>, <code>/private/var</code>, and other user home directories are protected by macOS&rsquo;s Transparency, Consent, and Control (TCC) framework. Without <strong>Full Disk Access</strong> granted to the app, those subtrees come back as 0 bytes.</p>
+        <p>Grant it in <strong>System Settings &rarr; Privacy &amp; Security &rarr; Full Disk Access</strong>, then re-scan.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Why is the scanned total sometimes higher than I expected?</summary>
+      <div class="answer">
+        <p>APFS clones (copy-on-write duplicates) share blocks on disk, but each clone is counted with its own block tally by the filesystem. If you have many clones, this inflates the scanned total. This is a known limitation of how <code>stat(2)</code> reports allocation &mdash; it has no way to know which blocks are shared.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>What platforms are supported?</summary>
+      <div class="answer">
+        <p>macOS, Linux, and Windows &mdash; with platform-appropriate file manager integration, keyboard shortcuts, and Trash / recycle-bin handling built in for each.</p>
+        <p>Ansel is still in beta and has mostly been tested on macOS. If you run into issues on Windows or Linux, please <a href="https://github.com/fosterdill/ansel/issues/new?template=bug_report.yml">file a bug report</a> &mdash; it helps a lot.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Can I build it from source?</summary>
+      <div class="answer">
+        <p>Yes. You&rsquo;ll need Rust (stable), Node 20+, and pnpm. Then:</p>
+        <p><code>pnpm install</code> &rarr; <code>pnpm tauri dev</code></p>
+        <p>The first Rust compile takes ~30&ndash;60 seconds on Apple Silicon. Full instructions in the <a href="https://github.com/fosterdill/ansel#development">README</a>.</p>
+      </div>
+    </details>
+
+  </div>
+</section>
+
 <section class="download wrap">
   <h2>Get it</h2>
   <p class="sub">Grab the latest release for your platform, or <a href="https://github.com/fosterdill/ansel#development">build from source</a>.</p>
+  <p class="sub" style="margin-bottom:0.35rem">Ansel is still in beta &mdash; rough edges included. If something breaks, <a href="https://github.com/fosterdill/ansel/issues/new?template=bug_report.yml">file a bug report</a>. Got an idea? <a href="https://github.com/fosterdill/ansel/issues/new?template=feature_request.yml">Suggest a feature</a>.</p>
+  <p class="sub" style="margin-bottom:2.25rem;font-size:0.82rem">Ansel can delete files. It does exactly what you tell it to &mdash; there&rsquo;s a two-step confirmation for permanent deletions, but the responsibility is still yours.</p>
   <div class="platform-grid">
     <div class="platform">
       <div class="os">macOS</div>
       <div class="ext">Apple Silicon &amp; Intel &middot; .dmg</div>
       <a href="https://github.com/fosterdill/ansel/releases/latest" class="btn btn-ghost" id="dl-macos">Download .dmg</a>
+      <p style="margin-top:0.85rem;font-size:0.73rem;color:var(--text-dim);line-height:1.5">Unsigned build &mdash; see <a href="#faq">the FAQ</a> for Gatekeeper instructions.</p>
     </div>
     <div class="platform">
       <div class="os">Linux</div>
@@ -514,7 +687,15 @@
     <a href="https://github.com/fosterdill/ansel/blob/main/SECURITY.md">Security</a>
     <a href="https://github.com/fosterdill/ansel/issues">Report a bug</a>
   </div>
-  <p class="byline">Ansel is open source under the MIT license. Built with Rust, Tauri &amp; React.</p>
+  <p class="byline">
+    If you find Ansel useful, <a href="https://github.com/fosterdill/ansel">star it on GitHub</a> &mdash; it helps others find the project.
+  </p>
+  <p class="byline" style="margin-top:0.35rem">
+    Feeling generous? <a href="https://venmo.com/Dylan-Foster-4">Venmo @Dylan-Foster-4</a>
+  </p>
+  <p class="byline" style="margin-top:1.25rem">
+    Ansel is open source under the MIT license. Built with Rust, Tauri &amp; React.
+  </p>
 </footer>
 
 <script>
