@@ -56,7 +56,8 @@
   }
 
   a { color: var(--accent); text-decoration: none; transition: color 0.15s; }
-  a:hover { color: #f0a450; }
+  a:hover { color: #f0a450; text-decoration: underline; }
+  .btn:hover { text-decoration: none; }
 
   code {
     font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
@@ -129,7 +130,7 @@
     border-color: var(--border);
     color: var(--heading);
   }
-  a.btn-ghost:hover, .btn-ghost:hover { background: #222; border-color: #555; color: #fff; }
+  a.btn-ghost:hover, .btn-ghost:hover { background: #222; border-color: #555; color: #fff !important; }
 
   .hero .meta {
     display: flex;
