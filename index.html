@@ -230,8 +230,21 @@
   }
 
   .demo-video {
-    max-width: 780px;
-    margin: 0 auto;
+    padding: 0 0.75rem;
+  }
+
+  @media (min-width: 961px) {
+    .demo-video {
+      padding: 0 8vw;
+    }
+  }
+
+  .demo-video video {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
   }
 
   /* ── faq ─────────────────────────────── */
@@ -462,10 +475,12 @@
   </div>
 </header>
 
-<section class="demos wrap">
-  <h2>See it in action</h2>
+<section class="demos">
+  <div class="wrap">
+    <h2>See it in action</h2>
+  </div>
   <div class="demo-video">
-    <video src="videos/full-demo.mp4" autoplay muted loop playsinline preload="metadata" style="max-width:100%;height:auto;display:block;border-radius:var(--radius);border:1px solid var(--border);"></video>
+    <video src="videos/full-demo.mp4" autoplay muted loop playsinline preload="metadata"></video>
   </div>
 </section>
 
