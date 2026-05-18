@@ -8,8 +8,10 @@
 <meta property="og:title" content="Ansel — Disk Usage Analyzer &amp; Cleanup Tool">
 <meta property="og:description" content="Free, open-source disk space visualizer for macOS, Linux, and Windows. Treemaps, sunbursts, and a cleanup workflow.">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="Ansel">
 <meta property="og:url" content="https://fosterdill.github.io/ansel-web/">
 <meta property="og:image" content="https://fosterdill.github.io/ansel-web/og-image.png">
+<link rel="canonical" href="https://fosterdill.github.io/ansel-web/">
 <meta property="og:image:width" content="1600">
 <meta property="og:image:height" content="1048">
 <meta property="og:image:alt" content="Ansel app showing a treemap of disk usage with a file tree and details panel.">
@@ -422,6 +424,18 @@
     .platform-grid { grid-template-columns: repeat(2, 1fr); }
   }
 
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   @media (max-width: 720px) {
     .wrap { padding: 0 1.25rem; }
     .hero h1 { font-size: 3.2rem; }
@@ -448,6 +462,81 @@
     .btn { font-size: 0.85rem; padding: 0.55em 1.2em; }
   }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Ansel",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": ["macOS", "Linux", "Windows"],
+      "description": "Free, open-source disk space analyzer and cleanup tool. Visualize disk usage as treemaps and sunburst diagrams, then free up space with a built-in cleanup workflow.",
+      "url": "https://fosterdill.github.io/ansel-web/",
+      "downloadUrl": "https://github.com/fosterdill/ansel/releases/latest",
+      "license": "https://github.com/fosterdill/ansel/blob/main/LICENSE",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Why doesn't the disk usage match Finder?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Ansel measures on-disk allocation — how many blocks each file actually occupies. Finder reports logical file size. Ansel's scanned total counts partial blocks per file so it will be higher than Finder's Used. Ansel's derived free space will be lower than Finder's Available because Finder includes purgeable space (Time Machine local snapshots, caches). Finder uses base-10 (decimal GB) while Ansel matches the platform convention."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "macOS won't let me open the app. Help?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Right-click → Open no longer works on recent macOS versions for unsigned apps. Instead: try to open the app (Gatekeeper will block it), open System Settings → Privacy & Security, scroll to the bottom where you'll see Ansel was blocked, click Open Anyway, then confirm the second dialog. Subsequent launches work normally."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why are some folders showing 0 bytes?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Parts of ~/Library, /private/var, and other directories are protected by macOS's Transparency, Consent, and Control (TCC) framework. Without Full Disk Access granted to the app, those subtrees come back as 0 bytes. Grant it in System Settings → Privacy & Security → Full Disk Access, then re-scan."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why is the scanned total sometimes higher than I expected?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "APFS clones (copy-on-write duplicates) share blocks on disk, but each clone is counted with its own block tally by the filesystem. If you have many clones, this inflates the scanned total. This is a known limitation of how stat(2) reports allocation."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What platforms are supported?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "macOS, Linux, and Windows — with platform-appropriate file manager integration, keyboard shortcuts, and Trash / recycle-bin handling built in for each. Ansel is still in beta and has mostly been tested on macOS."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I build it from source?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. You'll need Rust (stable), Node 20+, and pnpm. Then run: pnpm install → pnpm tauri dev. The first Rust compile takes 30–60 seconds on Apple Silicon."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -456,7 +545,7 @@
 </a>
 
 <header class="hero wrap">
-  <h1>Ansel</h1>
+  <h1>Ansel<span class="sr-only"> — Disk Space Analyzer for macOS, Linux &amp; Windows</span></h1>
   <p class="deck">
     A free, open-source disk space analyzer for macOS, Linux, and Windows.
     Scan your drive, explore it as treemaps and sunbursts,
@@ -481,12 +570,13 @@
   </div>
 </header>
 
+<main>
 <section class="demos">
   <div class="wrap">
     <h2>See it in action</h2>
   </div>
   <div class="demo-video">
-    <video src="videos/full-demo.mp4" autoplay muted loop playsinline preload="metadata"></video>
+    <video src="videos/full-demo.mp4" poster="og-image.png" autoplay muted loop playsinline preload="metadata"></video>
   </div>
 </section>
 
@@ -626,6 +716,7 @@
     </div>
   </div>
 </section>
+</main>
 
 <footer class="wrap">
   <div class="links">

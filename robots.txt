@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://fosterdill.github.io/ansel-web/sitemap.xml
